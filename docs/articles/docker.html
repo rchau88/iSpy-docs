@@ -118,11 +118,11 @@
 <p>There are two versions of docker images for iSpy:</p>
 <ul>
 <li>
-<a href="#development-version">Development version</a> for
-continuous integration of the application</li>
+<a href="#build-development-version-of-ispy">Development version</a>
+for continuous integration of the application</li>
 <li>
-<a href="#production-version">Production version</a> for deployment
-of the application</li>
+<a href="#build-production-version-of-ispy">Production version</a>
+for deployment of the application</li>
 </ul>
 </div>
 <div class="section level2">
@@ -140,9 +140,10 @@ of the application</li>
 <li>IRMA (stored in <a href="https://gallery.ecr.aws/n3z8t4o2/irma" class="external-link">AWS’s ECR</a>)</li>
 <li>Dais-Ribosome (stored in <a href="https://gallery.ecr.aws/n3z8t4o2/dais-ribosome" class="external-link">AWS’s
 ECR</a>)</li>
-<li>spyne (stored in <a href="https://gallery.ecr.aws/n3z8t4o2/irma" class="external-link">quay.io’s respitory</a>,
-also see <a href="https://github.com/nbx0/spyne" class="external-link">our Github repo</a> for
-more details about the usage of the application)</li>
+<li>spyne (stored in <a href="https://quay.io/repository/nbx0_cdc/spyne" class="external-link">Quay.io’s
+respitory</a>, also see <a href="https://github.com/nbx0/spyne" class="external-link">our
+Github repo</a> for more details about the usage of the
+application)</li>
 </ul>
 </div>
 <div class="section level2">
@@ -176,7 +177,7 @@ directory is mounted to <strong>/data</strong> directory inside the
 container.</p>
 </div>
 <div class="section level2">
-<h2 id="development-version-of-ispy">Development version of iSpy<a class="anchor" aria-label="anchor" href="#development-version-of-ispy"></a>
+<h2 id="build-development-version-of-ispy">Build development version of iSpy<a class="anchor" aria-label="anchor" href="#build-development-version-of-ispy"></a>
 </h2>
 <p>This version allows you to mount the code base that is needed to
 develop the <code>iSpy</code> dashboard. Any updates or changes to the
@@ -283,7 +284,7 @@ indeed hosted there.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="production-version-of-ispy">Production version of iSpy<a class="anchor" aria-label="anchor" href="#production-version-of-ispy"></a>
+<h2 id="build-production-version-of-ispy">Build production version of iSpy<a class="anchor" aria-label="anchor" href="#build-production-version-of-ispy"></a>
 </h2>
 <p>This version <strong>ONLY</strong> allows you to mount the data files
 that are needed to populate the <code>iSpy</code> dashboard. In other
