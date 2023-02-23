@@ -22,19 +22,19 @@ This version allows you to mount the code base that is needed to develop the `iS
 
 ### (1) Clone spyne respitory
 
-```
+```bash
 git clone https://git.biotech.cdc.gov/nbx0/spyne.git
 ``` 
 
 ### (2) Clone iSpy respitory
 
-```
+```bash
 git clone https://git.biotech.cdc.gov/nbx0/iSpy.git
 ``` 
 
 ### (3) Clone irma-spy-testdata respitory
 
-```
+```bash
 git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 ```
 
@@ -42,7 +42,7 @@ git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 
 - CD to `irma-spy-testdata` folder where `data.tar.gz` file is stored and extract "runs" from the tar archive.
 
-```
+```bash
 [ $( which pigz) ] &&\
     time tar --use-compress-program="pigz -p$(nproc)" -xf data.tar.gz ||\
     tar -xf data.tar.gz
@@ -54,7 +54,7 @@ git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 - Mount code base of **spyne** to **/spyne** directory inside the **spyne** container: change **/path/to/spyne** to your **spyne** directory
 - Mount code base of **iSpy** to **/iSpy** directory inside the **ispy** container: change **/path/to/iSpy** to your **iSpy** directory
 
-```
+```bash
 version: "3.9"
 
 x-dais-version:
@@ -100,7 +100,7 @@ x-ispy-volumes:
 
 ### (6) Start all services listed in the docker-compose.yml file
 
-```
+```bash
 docker-compose up -d 
 ```
 
@@ -110,7 +110,7 @@ For more information about the docker-compose syntax, see [docker-compose up ref
 
 ### (7) To check if the services are started sucessfully
 
-```
+```bash
 docker-compose ps
 
 ```
@@ -127,7 +127,7 @@ This version **ONLY** allows you to mount the data files that are needed to run 
 
 ### (1) Clone irma-spy-testdata respitory
 
-```
+```bash
 git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 ```
 
@@ -135,7 +135,7 @@ git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 
 - CD to `irma-spy-testdata` folder where `data.tar.gz` file is stored and extract "runs" from the tar archive.
 
-```
+```bash
 [ $( which pigz) ] &&\
     time tar --use-compress-program="pigz -p$(nproc)" -xf data.tar.gz ||\
     tar -xf data.tar.gz
@@ -145,7 +145,7 @@ git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 
 - Mount data directory to `/data` directory inside of all containers: change `/path/to/data` to your `irma-spy-testdata` directory
 
-```
+```bash
 version: "3.9"
 
 x-dais-version:
@@ -179,7 +179,7 @@ x-docker-volumes:
 
 ### (4) Start all services listed in the docker-compose.yml file
 
-```
+```bash
 docker-compose up -d 
 ```
 
@@ -189,7 +189,7 @@ For more information about the docker-compose syntax, see [docker-compose up ref
 
 ### (5) To check if the services are started sucessfully
 
-```
+```bash
 docker-compose ps
 
 ```
