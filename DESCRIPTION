@@ -16,10 +16,8 @@ Description: iSpy is an interactive dashboard created using Dash, a python frame
   allows users to interactively create a metadata and config file for Influenza
   Genome and SARS-CoV-2 Spike-Gene Assembly. Subsequently, it generates files necessary 
   to upload via FTP to NCBI’s databases Genbank, BioSample, and SRA, as well as, GISAID.
+Depends: R (>= 4.1.0)
 RoxygenNote: 7.2.3
-Imports:
-  devtools,
-  pkgdown
 License: GPL-3 + file LICENSE
 URL: https://github.com/nbx0/iSpy
 Encoding: UTF-8
