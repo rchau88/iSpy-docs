@@ -13,13 +13,21 @@ There are two versions of docker images for iSpy:
 
 ## Container dependencies
 
+iSpy relies on three Docker containers to run its genome assembly and curation: 
+
 - IRMA (stored in [AWS’s ECR](https://gallery.ecr.aws/n3z8t4o2/irma))
 - Dais-Ribosome (stored in [AWS’s ECR](https://gallery.ecr.aws/n3z8t4o2/dais-ribosome))
-- spyne (stored in [Quay.io's respitory](https://quay.io/repository/nbx0_cdc/spyne), also see [our Github repo ](https://github.com/nbx0/spyne) for more details about the usage of the application)
+- spyne (see [our Github repo ](https://github.com/nbx0/spyne))
+
+## Pulling down test data
+
+```bash
+https://git.biotech.cdc.gov/nbx0/irma-spy-testdata
+``` 
 
 ## Setting up containers
 
-1) Pull down **IRMA**, **Dais-Ribosome**, and **spyne** docker images
+1) Pull down **IRMA**, **Dais-Ribosome** and **spyne** docker images
 
 IRMA version 1.0.2p3: 
 
@@ -34,8 +42,10 @@ docker pull public.ecr.aws/n3z8t4o2/dais-ribosome:1.2.1
 
 spyne version 1.1.0: 
 ```bash
-docker pull quay.io/nbx0_cdc/spyne:v1.1.0
+docker build -t spyne:1.1.0 https://github.com/nbx0/spyne.git#prod
 ```
+
+**`#`**: specifies the target branch of the Git repo 
 
 (2) Run IRMA, Dais-Ribosome, and spyne containers
 
@@ -51,14 +61,17 @@ docker run -v /path/to/data:/data --name dais-ribosome -t -d public.ecr.aws/n3z8
 
 spyne:
 ```bash
-docker run -v /path/to/data:/data --name spyne -t -d quay.io/nbx0_cdc/spyne:v1.1.0
+docker run -v /path/to/data:/data --name spyne -t -d spyne:1.1.0
 ```
 
 **-v**: mount host data directory to **/data** directory inside the container <br>
 **-t**: allocate a pseudo-tty <br>
 **-d**: run the container in detached mode <br>
+**`--`name**: give an identity to the container <br>
 
-**Important Note:** make sure **/path/to/data** are the same for all containers. This directory is mounted to **/data** directory inside the container.
+**Important Note:** 
+
+- Mount test data to `/data` directory inside of all containers: e.g. change `/path/to/data` to your `irma-spy-testdata` directory. 
 
 ## Build development version of iSpy
 

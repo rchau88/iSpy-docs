@@ -1,9 +1,9 @@
 
 ## Running iSpy with docker-compose
 
-The iSpy's dashboard relies on four Docker containers to run its genome assembly and curation: **IRMA**, **DAIS-Ribosome**, **spyne**, and **iSpy**. Presently, the IRMA and DAIS-Ribosome docker images are stored in **AWS’s EC**, and the spyne and iSpy docker images are stored in **Quay.io's repository**. These images can be pulled down and built into runnable containers with the ```docker pull``` and ```docker run``` commands.
+The iSpy's dashboard relies on four Docker containers to run its genome assembly and curation: **IRMA**, **DAIS-Ribosome**, **spyne**, and **iSpy**. Presently, IRMA and DAIS-Ribosome docker images are stored in **AWS’s ECR**, a public gallery for sharing and deploying container images. Both images can be pulled down and built into runnable containers with ```docker pull``` and ```docker run``` commands. On the other hand, spyne and iSpy docker images can be built directly from their respective **Github repository** and with a specified **target branch** using ```docker build``` and ```docker run``` commands.
 
-Instead of pulling down each image one by one and run its container, we can utilize **docker-compose** to pull all the images down at once, build its containers, and configure them to communicate to each other. All these tasks can be accomplished using a docker-compose.yml file.
+Although we can pull down each of the four required images one by one and run its container, to ease our process and reduce repetitive tasks, we can utilize **docker-compose** to pull all of the images down at once, build its containers, and configure them to communicate with each other. All these tasks can be accomplished using a **docker-compose.yml** file.
 
 There are two versions of the docker-compose.yml files:
 
@@ -32,25 +32,9 @@ git clone https://git.biotech.cdc.gov/nbx0/spyne.git
 git clone https://git.biotech.cdc.gov/nbx0/iSpy.git
 ``` 
 
-### (3) Clone irma-spy-testdata respitory
+### (3) CD to `iSpy` folder where `docker-compose-git-dev.yml` is stored and edit the yaml file to link the data inputs and code base to appropriate containers
 
-```bash
-git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
-```
-
-### (4) Extract test data for running iSpy and spyne
-
-- CD to `irma-spy-testdata` folder where `data.tar.gz` file is stored and extract "runs" from the tar archive.
-
-```bash
-[ $( which pigz) ] &&\
-    time tar --use-compress-program="pigz -p$(nproc)" -xf data.tar.gz ||\
-    tar -xf data.tar.gz
-```
-
-### (5) CD to `iSpy` folder where `docker-compose-quay-dev.yml` is stored and edit the yaml file to link the data inputs and code base to appropriate containers
-
-- Mount data directory to **/data** directory inside of all containers: change **/path/to/data** to your **irma-spy-testdata** directory
+- Mount data to **/data** directory inside of all containers: change **/path/to/data** to your **iSpy/data** directory
 - Mount code base of **spyne** to **/spyne** directory inside the **spyne** container: change **/path/to/spyne** to your **spyne** directory
 - Mount code base of **iSpy** to **/iSpy** directory inside the **ispy** container: change **/path/to/iSpy** to your **iSpy** directory
 
@@ -67,11 +51,11 @@ x-irma-version:
 
 x-spyne-version:
   &spyne-version 
-  quay.io/nbx0_cdc/spyne:v1.1.0
+  https://github.com/nbx0/spyne.git#prod
 
 x-ispy-version:
   &ispy-version 
-  quay.io/nbx0_cdc/ispy:v1.1.0
+  https://github.com/nbx0/iSpy.git#prod 
 
 x-data-volumes:
   &data-volume
@@ -98,24 +82,25 @@ x-ispy-volumes:
   target: /iSpy
 ```
 
-### (6) Start all services listed in the docker-compose.yml file
+### (4) Start all services listed in the docker-compose-git-dev.yml file
 
 ```bash
-docker-compose up -d 
+docker-compose -f docker-compose-git-dev.yml up -d 
 ```
 
+**-f**: name of the docker-compose file <br>
 **-d**: run the containers in detached mode <br>
 
 For more information about the docker-compose syntax, see [docker-compose up reference](https://docs.docker.com/engine/reference/commandline/compose_up/)
 
-### (7) To check if the services are started sucessfully
+### (5) To check if the services are started sucessfully
 
 ```bash
-docker-compose ps
+docker-compose -f docker-compose-git-dev.yml ps
 
 ```
 
-### (8) Access the `iSpy` dashboard on the host network
+### (6) Access the `iSpy` dashboard on the host network
 
 You can visit the local host using your preferred web browser, type in http://localhost:8010, and check if the dashboard is indeed hosted there.
 
@@ -131,19 +116,9 @@ This version **ONLY** allows you to mount the data files that are needed to run 
 git clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git
 ```
 
-### (2) Extract test data for running iSpy
+### (2) CD to `iSpy` folder where `docker-compose-git.yml` is stored and edit the yaml file to link the data inputs to appropriate containers
 
-- CD to `irma-spy-testdata` folder where `data.tar.gz` file is stored and extract "runs" from the tar archive.
-
-```bash
-[ $( which pigz) ] &&\
-    time tar --use-compress-program="pigz -p$(nproc)" -xf data.tar.gz ||\
-    tar -xf data.tar.gz
-```
-
-### (3) CD to `iSpy` folder where `docker-compose-quay.yml` is stored and edit the yaml file to link the data inputs to appropriate containers
-
-- Mount data directory to `/data` directory inside of all containers: change `/path/to/data` to your `irma-spy-testdata` directory
+- Mount data to `/data` directory inside of all containers: change `/path/to/data` to your `iSpy/data` directory
 
 ```bash
 version: "3.9"
@@ -158,11 +133,11 @@ x-irma-version:
 
 x-spyne-version:
   &spyne-version 
-  quay.io/nbx0_cdc/spyne:v1.1.0
+  https://github.com/nbx0/spyne.git#prod
 
 x-ispy-version:
   &ispy-version 
-  quay.io/nbx0_cdc/ispy:v1.1.0
+  https://github.com/nbx0/iSpy.git#prod 
 
 x-data-volumes:
   &data-volume
@@ -177,24 +152,25 @@ x-docker-volumes:
   target: /var/run/docker.sock 
 ```
 
-### (4) Start all services listed in the docker-compose.yml file
+### (3) Start all services listed in the docker-compose-git.yml file
 
 ```bash
-docker-compose up -d 
+docker-compose -f docker-compose-git.yml up -d 
 ```
 
+**-f**: name of the docker-compose file <br>
 **-d**: run the containers in detached mode <br>
 
 For more information about the docker-compose syntax, see [docker-compose up reference](https://docs.docker.com/engine/reference/commandline/compose_up/)
 
-### (5) To check if the services are started sucessfully
+### (4) To check if the services are started sucessfully
 
 ```bash
-docker-compose ps
+docker-compose -f docker-compose-git.yml ps
 
 ```
 
-### (6) Access the `iSpy` dashboard on the host network
+### (5) Access the `iSpy` dashboard on the host network
 
 You can visit the local host using your preferred web browser, type in http://localhost:8020, and check if the dashboard is indeed hosted there.
 

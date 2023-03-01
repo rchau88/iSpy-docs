@@ -118,16 +118,21 @@
 <p>The iSpy’s dashboard relies on four Docker containers to run its
 genome assembly and curation: <strong>IRMA</strong>,
 <strong>DAIS-Ribosome</strong>, <strong>spyne</strong>, and
-<strong>iSpy</strong>. Presently, the IRMA and DAIS-Ribosome docker
-images are stored in <strong>AWS’s EC</strong>, and the spyne and iSpy
-docker images are stored in <strong>Quay.io’s repository</strong>. These
-images can be pulled down and built into runnable containers with the
-<code>docker pull</code> and <code>docker run</code> commands.</p>
-<p>Instead of pulling down each image one by one and run its container,
-we can utilize <strong>docker-compose</strong> to pull all the images
-down at once, build its containers, and configure them to communicate to
-each other. All these tasks can be accomplished using a
-docker-compose.yml file.</p>
+<strong>iSpy</strong>. Presently, IRMA and DAIS-Ribosome docker images
+are stored in <strong>AWS’s ECR</strong>, a public gallery for sharing
+and deploying container images. Both images can be pulled down and built
+into runnable containers with <code>docker pull</code> and
+<code>docker run</code> commands. On the other hand, spyne and iSpy
+docker images can be built directly from their respective <strong>Github
+repository</strong> and with a specified <strong>target branch</strong>
+using <code>docker build</code> and <code>docker run</code>
+commands.</p>
+<p>Although we can pull down each of the four required images one by one
+and run its container, to ease our process and reduce repetitive tasks,
+we can utilize <strong>docker-compose</strong> to pull all of the images
+down at once, build its containers, and configure them to communicate
+with each other. All these tasks can be accomplished using a
+<strong>docker-compose.yml</strong> file.</p>
 <p>There are two versions of the docker-compose.yml files:</p>
 <ul>
 <li>
@@ -166,32 +171,14 @@ integration (CI) of the application.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://git.biotech.cdc.gov/nbx0/iSpy.git</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="clone-irma-spy-testdata-respitory">(3) Clone irma-spy-testdata respitory<a class="anchor" aria-label="anchor" href="#clone-irma-spy-testdata-respitory"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="extract-test-data-for-running-ispy-and-spyne">(4) Extract test data for running iSpy and spyne<a class="anchor" aria-label="anchor" href="#extract-test-data-for-running-ispy-and-spyne"></a>
+<h3 id="cd-to-ispy-folder-where-docker-compose-git-dev-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-and-code-base-to-appropriate-containers">(3) CD to <code>iSpy</code> folder where
+<code>docker-compose-git-dev.yml</code> is stored and edit the yaml file
+to link the data inputs and code base to appropriate containers<a class="anchor" aria-label="anchor" href="#cd-to-ispy-folder-where-docker-compose-git-dev-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-and-code-base-to-appropriate-containers"></a>
 </h3>
 <ul>
-<li>CD to <code>irma-spy-testdata</code> folder where
-<code>data.tar.gz</code> file is stored and extract “runs” from the tar
-archive.</li>
-</ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$(</span> <span class="fu">which</span> pigz<span class="va">)</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span><span class="dt">\</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">time</span> tar <span class="at">--use-compress-program</span><span class="op">=</span><span class="st">"pigz -p</span><span class="va">$(</span><span class="fu">nproc</span><span class="va">)</span><span class="st">"</span> <span class="at">-xf</span> data.tar.gz <span class="kw">||</span><span class="dt">\</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar</span> <span class="at">-xf</span> data.tar.gz</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="cd-to-ispy-folder-where-docker-compose-quay-dev-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-and-code-base-to-appropriate-containers">(5) CD to <code>iSpy</code> folder where
-<code>docker-compose-quay-dev.yml</code> is stored and edit the yaml
-file to link the data inputs and code base to appropriate
-containers<a class="anchor" aria-label="anchor" href="#cd-to-ispy-folder-where-docker-compose-quay-dev-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-and-code-base-to-appropriate-containers"></a>
-</h3>
-<ul>
-<li>Mount data directory to <strong>/data</strong> directory inside of
-all containers: change <strong>/path/to/data</strong> to your
-<strong>irma-spy-testdata</strong> directory</li>
+<li>Mount data to <strong>/data</strong> directory inside of all
+containers: change <strong>/path/to/data</strong> to your
+<strong>iSpy/data</strong> directory</li>
 <li>Mount code base of <strong>spyne</strong> to <strong>/spyne</strong>
 directory inside the <strong>spyne</strong> container: change
 <strong>/path/to/spyne</strong> to your <strong>spyne</strong>
@@ -201,63 +188,64 @@ directory inside the <strong>ispy</strong> container: change
 <strong>/path/to/iSpy</strong> to your <strong>iSpy</strong>
 directory</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">version:</span> <span class="st">"3.9"</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x-dais-version:</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">dais-version</span> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/dais-ribosome:1.2.1</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x-irma-version:</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">irma-version</span> </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/irma:1.0.2p3</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-version:</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-version</span> </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quay.io/nbx0_cdc/spyne:v1.1.0</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-version:</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-version</span> </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quay.io/nbx0_cdc/ispy:v1.1.0</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ex">x-data-volumes:</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">data-volume</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/data</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /data</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="ex">x-docker-volumes:</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">docker-socket</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /var/run/docker.sock </span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /var/run/docker.sock </span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-volumes:</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-code</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/spyne</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /spyne </span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-volumes:</span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-code</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/iSpy</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /iSpy</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">version:</span> <span class="st">"3.9"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x-dais-version:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">dais-version</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/dais-ribosome:1.2.1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x-irma-version:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">irma-version</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/irma:1.0.2p3</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-version:</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-version</span> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">https://github.com/nbx0/spyne.git#prod</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-version:</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-version</span> </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">https://github.com/nbx0/iSpy.git#prod</span> </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ex">x-data-volumes:</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">data-volume</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/data</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /data</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ex">x-docker-volumes:</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">docker-socket</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /var/run/docker.sock </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /var/run/docker.sock </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-volumes:</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-code</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/spyne</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /spyne </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-volumes:</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-code</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/iSpy</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /iSpy</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="start-all-services-listed-in-the-docker-compose-yml-file">(6) Start all services listed in the docker-compose.yml file<a class="anchor" aria-label="anchor" href="#start-all-services-listed-in-the-docker-compose-yml-file"></a>
+<h3 id="start-all-services-listed-in-the-docker-compose-git-dev-yml-file">(4) Start all services listed in the docker-compose-git-dev.yml
+file<a class="anchor" aria-label="anchor" href="#start-all-services-listed-in-the-docker-compose-git-dev-yml-file"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span> </span></code></pre></div>
-<p><strong>-d</strong>: run the containers in detached mode <br></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> <span class="at">-f</span> docker-compose-git-dev.yml up <span class="at">-d</span> </span></code></pre></div>
+<p><strong>-f</strong>: name of the docker-compose file <br><strong>-d</strong>: run the containers in detached mode <br></p>
 <p>For more information about the docker-compose syntax, see <a href="https://docs.docker.com/engine/reference/commandline/compose_up/" class="external-link">docker-compose
 up reference</a></p>
 </div>
 <div class="section level3">
-<h3 id="to-check-if-the-services-are-started-sucessfully">(7) To check if the services are started sucessfully<a class="anchor" aria-label="anchor" href="#to-check-if-the-services-are-started-sucessfully"></a>
+<h3 id="to-check-if-the-services-are-started-sucessfully">(5) To check if the services are started sucessfully<a class="anchor" aria-label="anchor" href="#to-check-if-the-services-are-started-sucessfully"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> ps</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> <span class="at">-f</span> docker-compose-git-dev.yml ps</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="access-the-ispy-dashboard-on-the-host-network">(8) Access the <code>iSpy</code> dashboard on the host network<a class="anchor" aria-label="anchor" href="#access-the-ispy-dashboard-on-the-host-network"></a>
+<h3 id="access-the-ispy-dashboard-on-the-host-network">(6) Access the <code>iSpy</code> dashboard on the host network<a class="anchor" aria-label="anchor" href="#access-the-ispy-dashboard-on-the-host-network"></a>
 </h3>
 <p>You can visit the local host using your preferred web browser, type
 in <a href="http://localhost:8010" class="external-link uri">http://localhost:8010</a>, and check if the dashboard is
@@ -274,77 +262,66 @@ that are needed to run <strong>IRMA</strong>,
 to their code base but is using their latest containerized version of
 the code.</p>
 <div class="section level3">
-<h3 id="clone-irma-spy-testdata-respitory-1">(1) Clone irma-spy-testdata respitory<a class="anchor" aria-label="anchor" href="#clone-irma-spy-testdata-respitory-1"></a>
+<h3 id="clone-irma-spy-testdata-respitory">(1) Clone irma-spy-testdata respitory<a class="anchor" aria-label="anchor" href="#clone-irma-spy-testdata-respitory"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://git.biotech.cdc.gov/nbx0/irma-spy-testdata.git</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="extract-test-data-for-running-ispy">(2) Extract test data for running iSpy<a class="anchor" aria-label="anchor" href="#extract-test-data-for-running-ispy"></a>
+<h3 id="cd-to-ispy-folder-where-docker-compose-git-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-to-appropriate-containers">(2) CD to <code>iSpy</code> folder where
+<code>docker-compose-git.yml</code> is stored and edit the yaml file to
+link the data inputs to appropriate containers<a class="anchor" aria-label="anchor" href="#cd-to-ispy-folder-where-docker-compose-git-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-to-appropriate-containers"></a>
 </h3>
 <ul>
-<li>CD to <code>irma-spy-testdata</code> folder where
-<code>data.tar.gz</code> file is stored and extract “runs” from the tar
-archive.</li>
+<li>Mount data to <code>/data</code> directory inside of all containers:
+change <code>/path/to/data</code> to your <code>iSpy/data</code>
+directory</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$(</span> <span class="fu">which</span> pigz<span class="va">)</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span><span class="dt">\</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">time</span> tar <span class="at">--use-compress-program</span><span class="op">=</span><span class="st">"pigz -p</span><span class="va">$(</span><span class="fu">nproc</span><span class="va">)</span><span class="st">"</span> <span class="at">-xf</span> data.tar.gz <span class="kw">||</span><span class="dt">\</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar</span> <span class="at">-xf</span> data.tar.gz</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">version:</span> <span class="st">"3.9"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x-dais-version:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">dais-version</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/dais-ribosome:1.2.1</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x-irma-version:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">irma-version</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/irma:1.0.2p3</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-version:</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-version</span> </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">https://github.com/nbx0/spyne.git#prod</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-version:</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-version</span> </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">https://github.com/nbx0/iSpy.git#prod</span> </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ex">x-data-volumes:</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">data-volume</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/data</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /data</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="ex">x-docker-volumes:</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">docker-socket</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /var/run/docker.sock </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /var/run/docker.sock </span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="cd-to-ispy-folder-where-docker-compose-quay-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-to-appropriate-containers">(3) CD to <code>iSpy</code> folder where
-<code>docker-compose-quay.yml</code> is stored and edit the yaml file to
-link the data inputs to appropriate containers<a class="anchor" aria-label="anchor" href="#cd-to-ispy-folder-where-docker-compose-quay-yml-is-stored-and-edit-the-yaml-file-to-link-the-data-inputs-to-appropriate-containers"></a>
+<h3 id="start-all-services-listed-in-the-docker-compose-git-yml-file">(3) Start all services listed in the docker-compose-git.yml
+file<a class="anchor" aria-label="anchor" href="#start-all-services-listed-in-the-docker-compose-git-yml-file"></a>
 </h3>
-<ul>
-<li>Mount data directory to <code>/data</code> directory inside of all
-containers: change <code>/path/to/data</code> to your
-<code>irma-spy-testdata</code> directory</li>
-</ul>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">version:</span> <span class="st">"3.9"</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x-dais-version:</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">dais-version</span> </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/dais-ribosome:1.2.1</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x-irma-version:</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">irma-version</span> </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">public.ecr.aws/n3z8t4o2/irma:1.0.2p3</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="ex">x-spyne-version:</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">spyne-version</span> </span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quay.io/nbx0_cdc/spyne:v1.1.0</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="ex">x-ispy-version:</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">ispy-version</span> </span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">quay.io/nbx0_cdc/ispy:v1.1.0</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="ex">x-data-volumes:</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">data-volume</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /path/to/data</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /data</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="ex">x-docker-volumes:</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&amp;</span><span class="ex">docker-socket</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="ex">type:</span> bind</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="ex">source:</span> /var/run/docker.sock </span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">target:</span> /var/run/docker.sock </span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="start-all-services-listed-in-the-docker-compose-yml-file-1">(4) Start all services listed in the docker-compose.yml file<a class="anchor" aria-label="anchor" href="#start-all-services-listed-in-the-docker-compose-yml-file-1"></a>
-</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span> </span></code></pre></div>
-<p><strong>-d</strong>: run the containers in detached mode <br></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> <span class="at">-f</span> docker-compose-git.yml up <span class="at">-d</span> </span></code></pre></div>
+<p><strong>-f</strong>: name of the docker-compose file <br><strong>-d</strong>: run the containers in detached mode <br></p>
 <p>For more information about the docker-compose syntax, see <a href="https://docs.docker.com/engine/reference/commandline/compose_up/" class="external-link">docker-compose
 up reference</a></p>
 </div>
 <div class="section level3">
-<h3 id="to-check-if-the-services-are-started-sucessfully-1">(5) To check if the services are started sucessfully<a class="anchor" aria-label="anchor" href="#to-check-if-the-services-are-started-sucessfully-1"></a>
+<h3 id="to-check-if-the-services-are-started-sucessfully-1">(4) To check if the services are started sucessfully<a class="anchor" aria-label="anchor" href="#to-check-if-the-services-are-started-sucessfully-1"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> ps</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> <span class="at">-f</span> docker-compose-git.yml ps</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="access-the-ispy-dashboard-on-the-host-network-1">(6) Access the <code>iSpy</code> dashboard on the host network<a class="anchor" aria-label="anchor" href="#access-the-ispy-dashboard-on-the-host-network-1"></a>
+<h3 id="access-the-ispy-dashboard-on-the-host-network-1">(5) Access the <code>iSpy</code> dashboard on the host network<a class="anchor" aria-label="anchor" href="#access-the-ispy-dashboard-on-the-host-network-1"></a>
 </h3>
 <p>You can visit the local host using your preferred web browser, type
 in <a href="http://localhost:8020" class="external-link uri">http://localhost:8020</a>, and check if the dashboard is
