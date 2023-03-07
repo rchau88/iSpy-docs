@@ -1,5 +1,5 @@
 
-## Running iSpy with docker-compose
+## Running iSpy with docker-compose (testings for github actions)
 
 The iSpy's dashboard relies on four Docker containers to run its genome assembly and curation: **IRMA**, **DAIS-Ribosome**, **spyne**, and **iSpy**. Presently, IRMA and DAIS-Ribosome docker images are stored in **AWS’s ECR**, a public gallery for sharing and deploying container images. Both images can be pulled down and built into runnable containers with ```docker pull``` and ```docker run``` commands. On the other hand, spyne and iSpy docker images can be built directly from their respective **Github repository** and with a specified **target branch** using ```docker build``` and ```docker run``` commands.
 
