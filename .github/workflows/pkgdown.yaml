@@ -12,12 +12,13 @@ jobs:
   create-iSpy-docs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
+    timeout-minutes: 600
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       isPush: ${{ github.event_name == 'push' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - uses: r-lib/actions/setup-tinytex@v2
 
