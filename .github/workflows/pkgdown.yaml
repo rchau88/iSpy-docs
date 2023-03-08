@@ -49,7 +49,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
-          ACCESS_TOKEN: ${{ secrets.GH_DOCS }}
+          token: ${{ secrets.GH_DOCS }}
           branch: gh-pages
           folder: docs
-          clean: true
+          clean: false
