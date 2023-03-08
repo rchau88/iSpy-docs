@@ -51,5 +51,5 @@ jobs:
         with:
           token: ${{ secrets.GH_DOCS }}
           branch: gh-pages
-          folder: docs
+          folder: .
           clean: false
